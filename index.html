@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Видеособеседование 1 на 1</title>
+  </head>
+  <body>
+    <header>
+      <h1>Видеособеседование</h1>
+      <span id="status" class="status">Не подключено</span>
+    </header>
+
+    <main class="videos">
+      <figure>
+        <video id="remoteVideo" autoplay playsinline></video>
+        <figcaption>Собеседник</figcaption>
+      </figure>
+      <figure class="local">
+        <video id="localVideo" autoplay playsinline muted></video>
+        <figcaption>Вы</figcaption>
+      </figure>
+    </main>
+
+    <footer class="controls">
+      <button id="joinBtn" class="primary">Начать звонок</button>
+      <button id="micBtn" disabled>Выключить микрофон</button>
+      <button id="camBtn" disabled>Выключить камеру</button>
+      <button id="hangupBtn" class="danger" disabled>Завершить</button>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
