@@ -2,8 +2,24 @@ import './style.css';
 import { Signaling, type SignalMessage } from './signaling';
 
 const SIGNALING_URL = 'wss://inai-col3.fishrungames.com/signaling/';
+// STUN помогает узнать свой публичный адрес. TURN нужен, когда прямое соединение
+// невозможно (строгий NAT, мобильный интернет) — тогда трафик идёт через relay.
+// Свои ключи можно бесплатно получить на https://www.metered.ca/stun-turn
+const TURN_USERNAME = 'openrelayproject';
+const TURN_CREDENTIAL = 'openrelayproject';
 const RTC_CONFIG: RTCConfiguration = {
-  iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }],
+  iceServers: [
+    { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
+    {
+      urls: [
+        'turn:openrelay.metered.ca:80',
+        'turn:openrelay.metered.ca:443',
+        'turn:openrelay.metered.ca:443?transport=tcp',
+      ],
+      username: TURN_USERNAME,
+      credential: TURN_CREDENTIAL,
+    },
+  ],
 };
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -56,8 +72,13 @@ function createPeerConnection(): RTCPeerConnection {
   localStream?.getTracks().forEach((track) => conn.addTrack(track, localStream!));
 
   conn.onicecandidate = (e) => {
-    if (e.candidate) signaling.send({ type: 'candidate', candidate: e.candidate.toJSON() });
+    if (e.candidate) {
+      // host = локальный, srflx = через STUN, relay = через TURN
+      console.log('[rtc] local candidate:', e.candidate.type, e.candidate.protocol);
+      signaling.send({ type: 'candidate', candidate: e.candidate.toJSON() });
+    }
   };
+  conn.oniceconnectionstatechange = () => console.log('[rtc] ice:', conn.iceConnectionState);
 
   conn.ontrack = (e) => {
     const [stream] = e.streams;
@@ -86,6 +107,7 @@ function closePeerConnection(): void {
     pc.onicecandidate = null;
     pc.ontrack = null;
     pc.onconnectionstatechange = null;
+    pc.oniceconnectionstatechange = null;
     pc.close();
     pc = null;
   }
