@@ -1,14 +1,51 @@
 {
-  "name": "webrtc-interview",
+  "name": "nurislam-call",
+  "productName": "Nurislam Call",
+  "description": "Видеозвонок 1 на 1 на WebRTC",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "author": {
+    "name": "Egoista",
+    "email": "nurislam.mac@gmail.com"
+  },
+  "main": "electron/main.cjs",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron:start": "npm run build && electron .",
+    "dist:win": "npm run build && electron-builder --win nsis --x64"
+  },
+  "build": {
+    "appId": "com.egoista.nurislamcall",
+    "productName": "Nurislam Call",
+    "copyright": "Copyright © 2026 Egoista",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "artifactName": "Nurislam-Call-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Nurislam Call",
+      "uninstallDisplayName": "Nurislam Call"
+    }
   },
   "devDependencies": {
+    "electron": "^45.5.0",
+    "electron-builder": "^26.18.0",
     "typescript": "^5.6.3",
     "vite": "^5.4.11"
   }
